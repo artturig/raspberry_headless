@@ -1,0 +1,40 @@
+rom selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.chrome.service import Service
+
+# Set up Chrome options for headless mode
+# service = Service(executable_path=r'/usr/bin/chromium-browser')
+service = Service(executable_path=r'/usr/bin/chromedriver')
+chrome_options = Options()
+chrome_options.add_argument('--headless')  # Enable headless mode
+chrome_options.binary_location = ('/usr/bin/chromium-browser')
+chrome_options.add_argument('--no-sandbox')
+chrome_options.add_argument('--disable-dev-shm-usage')
+chrome_options.add_argument('--disable-gpu')
+
+# Initialize the WebDriver with the Chrome options
+driver = webdriver.Chrome(service=service, options=chrome_options)
+
+try:
+    # Navigate to the webpage
+    driver.get('https://aromimenu.cgisaas.fi/TampereAromieMenus/FI/Default/Tampere/HARJUNKO/Restaurant.aspx')
+
+     # Execute JavaScript to click the element
+    driver.execute_script("document.getElementById('MainContent_RestaurantDateRangesFilterHeadersDataList_RestaurantDateRangesFilterHeadersLinkButton_1').click();")
+
+    WebDriverWait(driver, 10).until(
+    EC.presence_of_element_located((By.ID, 'MainContent_WeekdayListView_DataPanel_4'))
+    )
+    # Get the visible content of the page
+    content = driver.page_source
+
+    # Save the content to a file
+    with open('/home/xxx/ruokalista/ruokalista_raaka.html', 'w', encoding='utf-8') as f:
+        f.write(content)
+
+finally:
+    # Close the browser
+    driver.quit()
